@@ -110,13 +110,18 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Dark background (else themes often force the light version)
+vim.o.background = 'dark'
+-- Use zsh by default (necessary on VDAB laptop)
+vim.opt.shell = '/usr/bin/zsh'
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
+-- vim.schedule(function()
+--   vim.opt.clipboard = 'unnamedplus'
+-- end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -193,6 +198,16 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Buffer commands
+vim.keymap.set('n', '<leader>bb', ':BufferPin<CR>', { desc = 'Toggle pin on current buffer', silent = true })
+
+vim.keymap.set('n', '<leader>bcc', ':bprevious | bdelete #<CR>', { desc = 'Close current buffer and go to previous one', silent = true })
+vim.keymap.set('n', '<leader>bca', ':%bd<CR>', { desc = 'Close all buffers', silent = true })
+vim.keymap.set('n', '<leader>bcb', ':BufferCloseAllButCurrentOrPinned<CR>', { desc = 'Close all buffers except current or pinned', silent = true })
+
+-- Open LazyGit
+vim.keymap.set('n', '<leader>gg', ':term<CR>algit<CR>', { desc = 'Open LazyGit', silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -411,7 +426,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.lsp_workspace_symbols, { desc = '[S]earch workspace [S]ymbols' })
+      vim.keymap.set('n', '<leader>ss', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch workspace [S]ymbols' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -465,6 +480,9 @@ require('lazy').setup({
     },
   },
   { 'Bilal2453/luvit-meta', lazy = true },
+  {
+    'mfussenegger/nvim-jdtls',
+  },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -645,6 +663,9 @@ require('lazy').setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
+        },
+        jdtls = {
+          autostart = false,
         },
       }
 
@@ -850,8 +871,7 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
 
-      vim.cmd.colorscheme 'tokyonight'
-      vim.g.tokyonight_style = 'night'
+      vim.cmd.colorscheme 'tokyonight-night'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -934,6 +954,9 @@ require('lazy').setup({
       view = {
         width = {},
       },
+      renderer = {
+        group_empty = true,
+      },
       vim.keymap.set('n', '<C-t>', ':NvimTreeToggle<CR>', { silent = true }),
       vim.keymap.set({ 'n', 'i' }, '<C-Y>', ':NvimTreeFindFile<CR>', { silent = true }),
       vim.keymap.set('n', '<Tab>', ':BufferNext<CR>', { silent = true }),
@@ -961,6 +984,13 @@ require('lazy').setup({
       'nvim-neotest/neotest-jest',
       'nvim-neotest/nvim-nio',
       'nvim-lua/plenary.nvim',
+      {
+        'rcasia/neotest-java',
+        ft = 'java',
+        dependencies = {
+          'mfussenegger/nvim-jdtls',
+        },
+      },
     },
     config = function()
       local neotest = require 'neotest'
@@ -974,20 +1004,36 @@ require('lazy').setup({
         adapters = {
           require 'neotest-jest' {
             jestCommand = 'npm test --',
-            --jestConfigFile = "custom.jest.config.ts",
             env = { CI = true },
             cwd = function(path)
               return vim.fn.getcwd()
             end,
           },
+          require 'neotest-java' {
+            junit_jar = nil, -- default: stdpath("data") .. /nvim/neotest-java/junit-platform-console-standalone-[version].jar
+            incremental_build = true,
+          },
         },
       }
-      vim.keymap.set('n', '<leader>nr', neotest.run.run, { desc = 'NeoTest: Run tests' })
-      vim.keymap.set('n', '<leader>no', neotest.output.open, { desc = 'NeoTest: Test output' })
-      vim.keymap.set('n', '<leader>ns', neotest.summary.open, { desc = 'NeoTest: Summary' })
+      vim.keymap.set('n', '<leader>nr', neotest.run.run, { desc = '[N]eoTest [R]un tests' })
+      vim.keymap.set('n', '<leader>no', neotest.output.open, { desc = '[N]eoTest test [O]utput' })
+      vim.keymap.set('n', '<leader>ns', neotest.summary.toggle, { desc = '[N]eoTest [S]ummary' })
     end,
   },
-
+  {
+    'm4xshen/autoclose.nvim',
+    opts = {},
+  },
+  {
+    'ray-x/lsp_signature.nvim',
+    opts = {},
+  },
+  {
+    'hedyhli/outline.nvim',
+    opts = {
+      vim.keymap.set('n', '<leader>o', ':Outline<CR>', { desc = 'Toggle outline', silent = true }),
+    },
+  },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
