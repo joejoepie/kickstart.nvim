@@ -1072,7 +1072,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<F4>', ':DapStepOut<CR>')
       vim.keymap.set('n', '<F4>', ':DapStepOut<CR>')
 
-      vim.api.nvim_set_hl(0, 'DapStoppedLine', { bg = '#f6ff00' })
+      vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
+      vim.fn.sign_define('DapStopped', { text = '▶️', texthl = '', linehl = '', numhl = '' })
 
       dap.listeners.before.launch.dapui_config = function()
         ui.open()
@@ -1124,7 +1125,7 @@ require('lazy').setup({
     dependencies = {
       { 'nvim-lua/plenary.nvim' },
       -- optional picker
-      { 'nvim-telescope/telescope.nvim', tag = '0.1.4' },
+      { 'nvim-telescope/telescope.nvim', tag = '0.1.x' },
       -- optional picker
       { 'ibhagwan/fzf-lua' },
       { 'Shatur/neovim-session-manager' },
