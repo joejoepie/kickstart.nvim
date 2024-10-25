@@ -115,6 +115,10 @@ vim.o.background = 'dark'
 -- Use zsh by default (necessary on VDAB laptop)
 vim.opt.shell = '/usr/bin/zsh'
 
+-- Set shell title
+vim.o.title = true
+vim.o.titlestring = 'Neovim - %{fnamemodify(getcwd(), ":t")}'
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -162,6 +166,9 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- No line wrapping
+vim.wo.wrap = false
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -203,6 +210,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('n', '<leader>bb', ':BufferPin<CR>', { desc = 'Toggle pin on current buffer', silent = true })
 
 vim.keymap.set('n', '<leader>bcc', ':bprevious | bdelete #<CR>', { desc = 'Close current buffer and go to previous one', silent = true })
+vim.keymap.set('n', '<C-s>', ':bprevious | bdelete #<CR>', { desc = 'Close current buffer and go to previous one', silent = true })
 vim.keymap.set('n', '<leader>bca', ':%bd<CR>', { desc = 'Close all buffers', silent = true })
 vim.keymap.set('n', '<leader>bcb', ':BufferCloseAllButCurrentOrPinned<CR>', { desc = 'Close all buffers except current or pinned', silent = true })
 
@@ -482,6 +490,9 @@ require('lazy').setup({
   { 'Bilal2453/luvit-meta', lazy = true },
   {
     'mfussenegger/nvim-jdtls',
+    dependencies = {
+      'mfussenegger/nvim-dap',
+    },
   },
   {
     -- Main LSP Configuration
@@ -957,7 +968,8 @@ require('lazy').setup({
       renderer = {
         group_empty = true,
       },
-      vim.keymap.set('n', '<C-t>', ':NvimTreeToggle<CR>', { silent = true }),
+      sync_root_with_cwd = true,
+      vim.keymap.set('n', '<C-t>', '<cmd>NvimTreeToggle<CR>', { silent = true }),
       vim.keymap.set({ 'n', 'i' }, '<C-Y>', ':NvimTreeFindFile<CR>', { silent = true }),
       vim.keymap.set('n', '<Tab>', ':BufferNext<CR>', { silent = true }),
       vim.keymap.set('n', '<S-Tab>', ':BufferPrevious<CR>', { silent = true }),
@@ -1016,6 +1028,7 @@ require('lazy').setup({
         },
       }
       vim.keymap.set('n', '<leader>nr', neotest.run.run, { desc = '[N]eoTest [R]un tests' })
+      vim.keymap.set('n', '<leader>nd', '<cmd>lua require("neotest").run.run { strategy = "dap" }<CR>', { desc = '[N]eoTest [D]ebug tests' })
       vim.keymap.set('n', '<leader>no', neotest.output.open, { desc = '[N]eoTest test [O]utput' })
       vim.keymap.set('n', '<leader>ns', neotest.summary.toggle, { desc = '[N]eoTest [S]ummary' })
     end,
@@ -1033,6 +1046,99 @@ require('lazy').setup({
     opts = {
       vim.keymap.set('n', '<leader>o', ':Outline<CR>', { desc = 'Toggle outline', silent = true }),
     },
+  },
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      'nvim-neotest/nvim-nio',
+      'williamboman/mason.nvim',
+    },
+    config = function()
+      local dap = require 'dap'
+      local ui = require 'dapui'
+      local dapVl = require 'nvim-dap-virtual-text'
+
+      ui.setup()
+      dapVl.setup {}
+
+      vim.keymap.set('n', '<leader>cdd', ui.toggle)
+      vim.keymap.set('n', '<leader>cb', dap.toggle_breakpoint, { desc = 'Toggle breakpoint' })
+
+      vim.keymap.set('n', '<F1>', ':DapContinue<CR>')
+      vim.keymap.set('n', '<F2>', ':DapStepOver<CR>')
+      vim.keymap.set('n', '<F3>', ':DapStepInto<CR>')
+      vim.keymap.set('n', '<F4>', ':DapStepOut<CR>')
+      vim.keymap.set('n', '<F4>', ':DapStepOut<CR>')
+
+      vim.api.nvim_set_hl(0, 'DapStoppedLine', { bg = '#f6ff00' })
+
+      dap.listeners.before.launch.dapui_config = function()
+        ui.open()
+      end
+      dap.listeners.before.attach.dapui_config = function()
+        ui.open()
+      end
+
+      dap.adapters['pwa-node'] = {
+        type = 'server',
+        host = 'localhost',
+        port = '${port}',
+        executable = {
+          command = 'node',
+          args = {
+            vim.fn.expand '$HOME/.local/share/nvim/kickstart/dap/js-debug-dap-v1.95.0/js-debug/src/dapDebugServer.js',
+            '${port}',
+          },
+        },
+      }
+      dap.configurations.javascript = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+        },
+      }
+    end,
+  },
+  {
+    'coffebar/neovim-project',
+    opts = {
+      projects = { -- define project roots
+        '~/IdeaProjects/*',
+      },
+      picker = {
+        type = 'telescope', -- or "fzf-lua"
+      },
+      last_session_on_startup = false,
+    },
+    init = function()
+      -- enable saving the state of plugins in the session
+      -- vim.opt.sessionoptions:append 'globals' -- save global variables that start with an uppercase letter and contain at least one lowercase letter.
+      vim.keymap.set('n', '<leader>ww', '<cmd>NeovimProjectDiscover<CR>', { desc = 'Select out of all project' })
+      vim.keymap.set('n', '<leader>wh', '<cmd>NeovimProjectHistory<CR>', { desc = 'Select out of project history' })
+    end,
+    dependencies = {
+      { 'nvim-lua/plenary.nvim' },
+      -- optional picker
+      { 'nvim-telescope/telescope.nvim', tag = '0.1.4' },
+      -- optional picker
+      { 'ibhagwan/fzf-lua' },
+      { 'Shatur/neovim-session-manager' },
+    },
+    lazy = false,
+    priority = 100,
+  },
+  {
+    'folke/zen-mode.nvim',
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim', 'nvim-tree/nvim-web-devicons' }, -- if you use the mini.nvim suite
+    opts = {},
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
