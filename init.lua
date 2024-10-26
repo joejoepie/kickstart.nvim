@@ -1125,7 +1125,7 @@ require('lazy').setup({
     dependencies = {
       { 'nvim-lua/plenary.nvim' },
       -- optional picker
-      { 'nvim-telescope/telescope.nvim', tag = '0.1.x' },
+      { 'nvim-telescope/telescope.nvim' },
       -- optional picker
       { 'ibhagwan/fzf-lua' },
       { 'Shatur/neovim-session-manager' },
