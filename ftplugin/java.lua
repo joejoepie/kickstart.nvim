@@ -1,10 +1,18 @@
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
 local workspace_dir = vim.fn.expand '$HOME/.cache/jdtls/workspace/' .. project_name
+local dap_dir = vim.fn.expand '$HOME/.local/share/nvim/kickstart/dap'
+local java_debug_plugin = vim.fn.glob(dap_dir .. '/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar', true)
 
 local status, jdtls = pcall(require, 'jdtls')
 if not status then
   return
 end
+
+-- if not vim.fn.filereadable(java_debug_plugin) then
+--   local scriptfile = vim.fn.stdpath 'config' .. 'scripts/get_java_debug.sh'
+--   vim.fn.system('sh ' .. scriptfile .. dap_dir)
+--   print 'JE MOEDER'
+-- end
 
 local config = {
   -- The command that starts the language server
@@ -85,3 +93,25 @@ local config = {
 -- This starts a new client & server,
 -- or attaches to an existing client & server depending on the `root_dir`.
 require('jdtls').start_or_attach(config)
+
+local f = io.open '.settings/launch.lua'
+if f ~= nil then
+  f:close()
+  vim.notify('Loaded launch.lua file', vim.log.levels.INFO, nil)
+  vim.cmd ':luafile .settings/launch.lua'
+end
+--
+-- local dap = require 'dap'
+-- dap.configurations.java = {
+--   {
+--     projectName = 'bootstrap',
+--     javaExec = 'java',
+--     mainClass = 'be.vdab.rollenbeheer.LocalApplicationWithKeycloak',
+--     env = {
+--       TESTCONTAINERS_RYUK_DISABLED = true,
+--     },
+--     name = 'Custom launch LocalApplication',
+--     request = 'launch',
+--     type = 'java',
+--   },
+-- }

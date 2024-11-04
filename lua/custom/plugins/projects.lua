@@ -4,6 +4,7 @@ return {
     opts = {
       projects = { -- define project roots
         '~/IdeaProjects/*',
+        '~/.config/nvim/kickstart',
       },
       picker = {
         type = 'telescope', -- or "fzf-lua"
