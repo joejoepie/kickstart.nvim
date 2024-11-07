@@ -15,6 +15,7 @@ return {
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
       'nvim-java/nvim-java',
+      'folke/neoconf.nvim',
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -144,7 +145,16 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      require('java').setup()
+      -- Java stuff
+      require('java').setup {
+        root_markers = {
+          '.git',
+          'mvnw',
+          'gradlew',
+        },
+      }
+
+      require('neoconf').setup {}
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -184,7 +194,19 @@ return {
           },
         },
         jdtls = {
-          -- autostart = false,
+          settings = {
+            java = {
+              configuration = {
+                runtimes = {
+                  {
+                    name = 'JavaSE-21',
+                    path = '/home/wstanda1/.sdkman/candidates/java/21.0.3-tem/bin/java',
+                    default = true,
+                  },
+                },
+              },
+            },
+          },
         },
       }
 
