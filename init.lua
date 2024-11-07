@@ -110,6 +110,9 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Set 24bit colors
+vim.opt.termguicolors = true
+
 -- Dark background (else themes often force the light version)
 vim.o.background = 'dark'
 -- Use zsh by default (necessary on VDAB laptop)

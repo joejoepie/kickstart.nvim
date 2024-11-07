@@ -5,13 +5,13 @@ return {
       'nvim-neotest/neotest-jest',
       'nvim-neotest/nvim-nio',
       'nvim-lua/plenary.nvim',
-      {
-        'rcasia/neotest-java',
-        ft = 'java',
-        dependencies = {
-          'mfussenegger/nvim-jdtls',
-        },
-      },
+      -- {
+      --   'rcasia/neotest-java',
+      --   ft = 'java',
+      --   dependencies = {
+      --     'mfussenegger/nvim-jdtls',
+      --   },
+      -- },
     },
     config = function()
       local neotest = require 'neotest'
@@ -30,10 +30,10 @@ return {
               return vim.fn.getcwd()
             end,
           },
-          require 'neotest-java' {
-            junit_jar = nil, -- default: stdpath("data") .. /nvim/neotest-java/junit-platform-console-standalone-[version].jar
-            incremental_build = true,
-          },
+          -- require 'neotest-java' {
+          --   junit_jar = nil, -- default: stdpath("data") .. /nvim/neotest-java/junit-platform-console-standalone-[version].jar
+          --   incremental_build = true,
+          -- },
         },
       }
       vim.keymap.set('n', '<leader>nr', neotest.run.run, { desc = '[N]eoTest [R]un tests' })
