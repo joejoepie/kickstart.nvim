@@ -219,9 +219,6 @@ vim.keymap.set('n', '<C-s>', ':bprevious | bdelete #<CR>', { desc = 'Close curre
 vim.keymap.set('n', '<leader>bca', ':%bd<CR>', { desc = 'Close all buffers', silent = true })
 vim.keymap.set('n', '<leader>bcb', ':BufferCloseAllButCurrentOrPinned<CR>', { desc = 'Close all buffers except current or pinned', silent = true })
 
--- Open LazyGit
-vim.keymap.set('n', '<leader>gg', ':term<CR>algit<CR>', { desc = 'Open LazyGit', silent = true })
-
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
