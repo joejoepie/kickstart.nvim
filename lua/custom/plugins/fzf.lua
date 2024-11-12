@@ -9,7 +9,7 @@ return {
       fzf.setup { 'telescope' }
 
       vim.keymap.set('n', '<leader>sj', function()
-        fzf.lsp_live_workspace_symbols { fzf_opts = { ['--layout'] = 'reverse' } }
+        fzf.lsp_live_workspace_symbols {}
       end, { silent = true })
     end,
   },

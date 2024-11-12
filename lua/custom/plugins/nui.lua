@@ -30,6 +30,7 @@ return {
 
         local close = function()
           lgitPopup:unmount()
+          vim.keymap.del('t', '<C-c>')
         end
 
         vim.keymap.set('t', '<C-c>', close)

@@ -154,7 +154,15 @@ return {
         },
       }
 
-      require('neoconf').setup {}
+      vim.keymap.set(
+        'n',
+        '<leader>ctjr',
+        '<cmd>JavaTestRunCurrentMethod<CR><cmd>JavaTestViewLastReport<CR>',
+        { desc = 'Test [J]ava [R]un current [M]ethod', silent = true }
+      )
+      vim.keymap.set('n', '<leader>ctjR', '<cmd>JavaTestRunCurrentClass<CR>', { desc = 'Test [J]ava [R]un current class', silent = true })
+      vim.keymap.set('n', '<leader>ctjd', '<cmd>JavaTestDebugCurrentMethod<CR>', { desc = 'Test [J]ava [D]ebug current method', silent = true })
+      vim.keymap.set('n', '<leader>ctjp', '<cmd>JavaTestViewLastReport<CR>', { desc = 'Test [J]ava show re[P]ort', silent = true })
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -204,6 +212,18 @@ return {
                     default = true,
                   },
                 },
+              },
+              symbols = {
+                includeSourceMethodDeclarations = true,
+              },
+              referencesCodeLens = {
+                enabled = true,
+              },
+              references = {
+                includeAccessors = true,
+              },
+              saveActions = {
+                organizeImports = true,
               },
             },
           },

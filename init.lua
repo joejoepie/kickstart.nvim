@@ -233,6 +233,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Formatting
+function FormatSelection()
+  -- Get the start and end positions of the visual selection
+  local start_pos = vim.api.nvim_buf_get_mark(0, '<')
+  local end_pos = vim.api.nvim_buf_get_mark(0, '>')
+
+  -- Call the LSP range formatting function with these positions
+  vim.lsp.buf.range_formatting({}, start_pos, end_pos)
+end
+vim.keymap.set('v', '<leader>f', ':lua FormatSelection()<CR>', { noremap = true, silent = true })
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
