@@ -68,6 +68,8 @@ return {
           -- Find references for the word under your cursor.
           map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
+          map('gC', require('telescope.builtin').lsp_incoming_calls, '[G]oto Incoming [C]alls')
+
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
           map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -208,7 +210,7 @@ return {
                 runtimes = {
                   {
                     name = 'JavaSE-21',
-                    path = '/home/wstanda1/.sdkman/candidates/java/21.0.3-tem/bin/java',
+                    path = vim.fn.expand '$HOME/.sdkman/candidates/java/current/',
                     default = true,
                   },
                 },

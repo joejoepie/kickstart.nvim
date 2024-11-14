@@ -5,6 +5,7 @@
 	This can be fixed for the openapi-generator-maven-plugin, using the java generator, by adding underlying to the `<configuration>` of the plugin:
 	```xml
 	<configOptions>
-	<sourceFolder>.</sourceFolder>
+		<sourceFolder>.</sourceFolder>
+	</configOptions>
 	```
 * Plugins, such as the `openapi-generator-maven-plugin` when causing troubles, should be added to the `<pluginManagement>` part of the parent pom!
