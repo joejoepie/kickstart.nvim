@@ -175,6 +175,7 @@ return {
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      local lspconfig = require 'lspconfig'
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -188,7 +189,6 @@ return {
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -229,6 +229,10 @@ return {
               },
             },
           },
+        },
+        helm_ls = {
+          filetypes = { 'yaml' },
+          root_dir = lspconfig.util.root_pattern 'Chart.yaml',
         },
       }
 

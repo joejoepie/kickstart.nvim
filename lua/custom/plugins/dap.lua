@@ -22,7 +22,6 @@ return {
       vim.keymap.set('n', '<F2>', ':DapStepOver<CR>')
       vim.keymap.set('n', '<F3>', ':DapStepInto<CR>')
       vim.keymap.set('n', '<F4>', ':DapStepOut<CR>')
-      vim.keymap.set('n', '<F4>', ':DapStepOut<CR>')
 
       vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
       vim.fn.sign_define('DapStopped', { text = '▶️', texthl = '', linehl = '', numhl = '' })

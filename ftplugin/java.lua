@@ -115,3 +115,40 @@
 -- --     type = 'java',
 -- --   },
 -- -- }
+
+local init_file = io.open('.settings/init.lua', 'r')
+if init_file then
+  init_file:close()
+else
+  return
+end
+
+local dap = require 'dap'
+if dap.configurations.java == nil then
+  dap.configurations.java = {}
+end
+
+local function config_already_exists(configs, name)
+  for _, value in ipairs(dap.configurations.java) do
+    if value.name == name then
+      return true
+    end
+  end
+  return false
+end
+
+local configs = dofile '.settings/init.lua'
+for _, value in ipairs(configs) do
+  if not config_already_exists(dap.configurations.java, value.name) then
+    table.insert(dap.configurations.java, {
+      projectName = value.project,
+      javaExec = 'java',
+      mainClass = value.class,
+      env = value.env,
+      name = value.name,
+      request = 'launch',
+      type = 'java',
+    })
+    print 'Added custom dap configs'
+  end
+end
