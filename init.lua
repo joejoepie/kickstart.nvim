@@ -174,6 +174,10 @@ vim.o.mouse = 'a'
 -- No line wrapping
 vim.wo.wrap = false
 
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldlevel = 99
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
